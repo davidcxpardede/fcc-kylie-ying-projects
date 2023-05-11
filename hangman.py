@@ -1,43 +1,72 @@
+"""
+Hangman implementation by Kylie Ying
+
+YouTube Kylie Ying: https://www.youtube.com/ycubed 
+Twitch KylieYing: https://www.twitch.tv/kylieying 
+Twitter @kylieyying: https://twitter.com/kylieyying 
+Instagram @kylieyying: https://www.instagram.com/kylieyying/ 
+Website: https://www.kylieying.com
+Github: https://www.github.com/kying18 
+Programmer Beast Mode Spotify playlist: https://open.spotify.com/playlist/4Akns5EUb3gzmlXIdsJkPs?si=qGc4ubKRRYmPHAJAIrCxVQ 
+"""
+
 import random
+from words import words
+from hangman_visual import lives_visual_dict
 import string
 
-words = ["horas", "mejuahjuah", "njuahjuah", "yaahowu", "ahoi"]
 
 def get_valid_word(words):
-    word = random.choice(words)
+    word = random.choice(words)  # randomly chooses something from the list
     while '-' in word or ' ' in word:
         word = random.choice(words)
-    return word
+
+    return word.upper()
+
 
 def hangman():
     word = get_valid_word(words)
-    word_letters = set(word)    # Letters in the Word
+    word_letters = set(word)  # letters in the word
     alphabet = set(string.ascii_uppercase)
-    used_letters = set() #What the User has Guessed
-    
-    #Getting User Input
-    while len(word_letters) > 0:
-        
-        #Letters used
-        print("You have used these letters: ", "".join(used_letters))
-        
-        #What the current word is (i.e. W _ R D)
+    used_letters = set()  # what the user has guessed
+
+    lives = 7
+
+    # getting user input
+    while len(word_letters) > 0 and lives > 0:
+        # letters used
+        # ' '.join(['a', 'b', 'cd']) --> 'a b cd'
+        print('You have', lives, 'lives left and you have used these letters: ', ' '.join(used_letters))
+
+        # what current word is (ie W - R D)
         word_list = [letter if letter in used_letters else '-' for letter in word]
-        print("Current word: ", "".join(word_list))
-        
-        user_letter = input("Guess a letter: ").upper()
+        print(lives_visual_dict[lives])
+        print('Current word: ', ' '.join(word_list))
+
+        user_letter = input('Guess a letter: ').upper()
         if user_letter in alphabet - used_letters:
             used_letters.add(user_letter)
             if user_letter in word_letters:
                 word_letters.remove(user_letter)
-        
+                print('')
+
+            else:
+                lives = lives - 1  # takes away a life if wrong
+                print('\nYour letter,', user_letter, 'is not in the word.')
+
         elif user_letter in used_letters:
-            print("You have already used that character. Please try another letter.")
+            print('\nYou have already used that letter. Guess another letter.')
+
         else:
-            print("Invalid character. Please try again.")
+            print('\nThat is not a valid letter.')
 
-    #Gets here when len(word_letter == 0)
-#user_input = input('Type something: ')
-#print(user_input)
+    # gets here when len(word_letters) == 0 OR when lives == 0
+    if lives == 0:
+        print(lives_visual_dict[lives])
+        print('You died, sorry. The word was', word)
+    else:
+        print('YAY! You guessed the word', word, '!!')
 
-hangman()
+
+if __name__ == '__main__':
+    hangman()
